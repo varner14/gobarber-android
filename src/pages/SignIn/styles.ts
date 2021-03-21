@@ -1,5 +1,6 @@
 import styled from 'styled-components/native';
 import {Platform } from 'react-native';
+import { Form } from '@unform/mobile';
 
 export const Container = styled.View`
   flex: 1;
@@ -45,3 +46,9 @@ export const CreateAccountButtonText = styled.Text`
   font-family: 'RobotoSlab-Regular';
   margin-left: 16px;
 `;
+
+export const FormSignIn = styled(Form)`
+  width: 100%;
+  justify-content: center;
+  text-align: center
+`
