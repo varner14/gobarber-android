@@ -28,6 +28,7 @@ import {
   CreateAccountButtonText,
   FormSignIn,
 } from './styles';
+import { useAuth } from '../../hooks/auth';
 
 interface SignInFormData {
   email: string;
@@ -39,39 +40,44 @@ const SignIn: React.FC = () => {
   const passwordInputRef = useRef<TextInput>(null);
   const navigation = useNavigation();
 
-  const handleSignIn = useCallback(async (data: SignInFormData) => {
-    try {
-      formRef.current?.setErrors({});
+  const { signIn } = useAuth();
 
-      const schema = Yup.object().shape({
-        email: Yup.string()
-          .required('E-mail obrigatório')
-          .email('Digite um email válido'),
-        password: Yup.string().required('Senha é obrigatória'),
-      });
+  const handleSignIn = useCallback(
+    async (data: SignInFormData) => {
+      try {
+        formRef.current?.setErrors({});
 
-      await schema.validate(data, {
-        abortEarly: false,
-      });
+        const schema = Yup.object().shape({
+          email: Yup.string()
+            .required('E-mail obrigatório')
+            .email('Digite um email válido'),
+          password: Yup.string().required('Senha é obrigatória'),
+        });
 
-      //await signIn({
-      //  email: data.email,
-      //  password: data.password,
-      //});
+        await schema.validate(data, {
+          abortEarly: false,
+        });
 
-      //history.push('/dashboard');
-    } catch (err) {
-      if (err instanceof Yup.ValidationError) {
-        const errors = getValidationErrors(err);
-        formRef.current?.setErrors(errors);
-        return;
+        await signIn({
+          email: data.email,
+          password: data.password,
+        });
+
+        //history.push('/dashboard');
+      } catch (err) {
+        if (err instanceof Yup.ValidationError) {
+          const errors = getValidationErrors(err);
+          formRef.current?.setErrors(errors);
+          return;
+        }
+        Alert.alert(
+          'Erro na autentificação',
+          'Ocorreu um erro ao fazer login, por favor confira sua senha/login',
+        );
       }
-      Alert.alert(
-        'Erro na autentificação',
-        'Ocorreu um erro ao fazer login, por favor confira sua senha/login',
-      );
-    }
-  }, []);
+    },
+    [signIn],
+  );
 
   return (
     <>
